@@ -1,5 +1,9 @@
 // A BRF book indexer with a C FFI API.
 //
+// Copyright (C) 2019 Bristol Braille Technology
+// Licence: GPLv2 or any later version.
+//
+
 // Book paths are always UTF-8 and must not contain embedded NULs.
 //
 // The following book limits apply, and the behaviour when they're
