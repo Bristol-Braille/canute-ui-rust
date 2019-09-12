@@ -17,3 +17,14 @@ script:
   # Sanity-check only, no useful artefact.
   - rustup target add --toolchain 1.34.2 arm-unknown-linux-gnueabihf
   - RUSTFLAGS="-C linker=arm-linux-gnueabihf-gcc -C link-arg=-s" cargo build --verbose --release --target arm-unknown-linux-gnueabihf
+
+deploy:
+  provider: releases # Github releases, that is
+  api_key:  # Produced with the Travis Ruby gem.
+    secure: ZyenTygyNnsEMMOW/8AjrgBT/MrtsRGTr3V9rEt4ys2nRL2RoVOzzOfscELiCLRqAdd9O4Y/IlSa8eRxi1JGO7IG3OXVTTTOZb/c7e0iEtUrMgWNuBG0hiCBPJfglH5GQK17NumQTg4hSg+MAwpjs5OAxloGV1xvtMfOniWW01okPwMKp7cVMmnlrYsjTzhjqBXQuWkCmLNGx1MHSyukgf15qlBXK32zdcGSNTot7HA+D2zRjXPlFWKCefAmAvc86FoGLmS3YRUDsxdUI+IsYMcrXrd7UwgmkWwa9yuGcOG5eTUpSXZV1te5HuS0R64jP4/0/GFTiGUFRqUOAjjYMwEl32R99AiB8wdNh4g8rU/3z7NJjuUToVwUQWAz9jCkHbhqefFXPh+oQJdTaVQonu8ghrwuHoOuj55MBlEp5HyIBVqrEv67gYIjm37HXefG1TkrWMxkBEAW2YRmzQwtmiJs3McRyN/w+AjHfaSpVIv+ZFLdvrTC3j6gbh3S+/gKLgL5uDAdGuIUF8/cXGUNbR3QHQm+ljmkqxlsRhmUU+TdXNi6Bl/QGirT2ooVJ3mzeAIDtSZ5eCdKsyGaD9fFCwlB3VmNHvy26XEXdnjunMMmPNY4+dk+Rz73Nd0iFT7tSH6zihrJEOulcwXyMHQWa4YHnObHoVdIEfrxOEunqy0=
+  file: target/release/libbookindex.so
+  skip_cleanup: true
+  on:
+    repo: Bristol-Braille/canute-ui-rust
+    branch: master
+    tags: true # Github requires tags for anything but draft releases
