@@ -1,6 +1,19 @@
+# We build for x86_64 because the Python UI's CI still runs on x86_64 and we
+# need to produce the library for that.
+#
+# We build for ARM only to sanity-check the build, so that we don't get caught
+# out by arch-dependent features like atomics that might be missing on ARM.
+# The resulting library can't be used owing to compiler snags; see Cargo.toml.
+before_install:
+  # Some Rust libraries call out to libc6.
+  - sudo apt-get install -y gcc-arm-linux-gnueabihf libc6-dev-armhf-cross
 language: rust
 rust:
   - 1.34.2
 cache: cargo
 script:
-  - cargo build --verbose --all
+  # This is what we'll soon deploy and use in UI CI.
+  - cargo build --verbose --release
+  # Sanity-check only, no useful artefact.
+  - rustup target add --toolchain 1.34.2 arm-unknown-linux-gnueabihf
+  - RUSTFLAGS="-C linker=arm-linux-gnueabihf-gcc -C link-arg=-s" cargo build --verbose --release --target arm-unknown-linux-gnueabihf
