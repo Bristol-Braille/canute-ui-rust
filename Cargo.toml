@@ -1,9 +1,21 @@
-# It's slightly too early to upgrade the standard build env to buster.
-# It's too many hoops to install a snapshots.d.o copy; would require an equivs for various new dependencies.
-# (But if you wanted to try: a source of deb https://snapshot.debian.org/archive/debian/20180901T000000Z buster main
-# gets you most of the way there; it just then wants several packages that older rustc didn't; probably ones that
-# can be satisfied from stretch)
-# So I figure we run with rustup for this.  In which case we might as well use what buster does.
+# Choice of Rust version:
+#
+# Generally I prefer Debian stable's stuff for, well, stability.
+#
+# Debian stretch's Rust is too ancient, and doesn't have Cargo.
+#
+# Some time needs to be given to upgrading the standard build env to Debian
+# buster, but there are other problems competing for that time right now.
+#
+# There was no backport made to stretch, that I've seen.
+#
+# snapshots.d.o can sometimes work in place of backports, but it's a slog.
+# https://snapshot.debian.org/archive/debian/20180901T000000Z gets you most of
+# the way there but then wants several packages that older rustc didn't, and
+# probably still won't have Cargo.
+#
+# So I figure we run with rustup for this.  In which case we might as well use
+# what buster does, to make that transition easy.
 #
 # To build me for ARM under Debian stretch:
 #
@@ -16,12 +28,18 @@
 #    * download https://github.com/raspberrypi/tools and use
 #      `arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf` (ancient, but it's still
 #      what they use); works, and currently in use
-#    * mount a Raspbian image with GCC installed inside and run the link stage
-#      using that compiler under QEmu
+#    * Debian's gcc-arm-linux-gnueabihf has the above problem where its
+#      start-up uses ARMv7, so it links but crashes at runtime with an illegal
+#      instruction or something.  But it's used for CI sanity-check builds.
 #    * use Debian's arm-linux-gnueabi-gcc (*not* the gnueabihf one); you can
-#      build a hello world with this, but a .so linked under Rust's instruction
-#      fails to be recognised as a loadable library (dl_open() looks at the ELF
-#      header and moves on, but LD_DEBUG reveals nothing about why)
+#      build a working hello world with this, but a .so linked under Rust's
+#      instruction fails to be recognised as a loadable library (dl_open()
+#      looks at the ELF header and moves on, but LD_DEBUG reveals nothing about
+#      why)
+#    * mount a Raspbian image with GCC installed inside and run the link stage
+#      using that compiler under QEmu; not tried
+#    * forcibly install Raspbian's compiler despite arch mismatch and run it
+#      under QEmu; not tried
 #    * you could just build natively on Raspbian, but I'd expect the build to
 #      be slow enough to obstruct development
 #  * Install rustup, ideally *not* by curl; see:
